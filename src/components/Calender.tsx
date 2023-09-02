@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, isSameMonth, isBefore, isToday } from "date-fns"
+import { startOfWeek, startOfMonth, endOfWeek, endOfMonth, eachDayOfInterval, isSameMonth, isBefore, isToday, endOfDay, subMonths, addMonths } from "date-fns"
 import { formatDate } from "../utils/formatDate"
 import { cc } from "../utils/cc"
 
@@ -16,12 +16,16 @@ export function Calender(){
         <>
         <div className="calendar">
         <div className="header">
-          <button className="btn">Today</button>
+          <button className="btn" onClick={() => setSelectedMonth(new Date())}>Today</button>
           <div>
-            <button className="month-change-btn">&lt;</button>
-            <button className="month-change-btn">&gt;</button>
+            <button className="month-change-btn" onClick={() => {
+                setSelectedMonth(m => subMonths(m, 1))
+                }}>&lt;</button>
+            <button className="month-change-btn" onClick={() => {
+                setSelectedMonth(m => addMonths(m, 1))
+            }}>&gt;</button>
           </div>
-          <span className="month-title">{formatDate(new Date(), {month:"long", year: "numeric"})}</span>
+          <span className="month-title">{formatDate(selectedMonth, {month:"long", year: "numeric"})}</span>
         </div>
         <div className="days">
             {calendarDays.map((day, index) => (
@@ -116,7 +120,7 @@ function CalenderDay({ day, showWeekName, selectedMonth } : CalenderDayProps){
                 cc(
                     "day", 
                     !isSameMonth(day, selectedMonth) && "non-month-day", 
-                    isBefore(endOfMonth(day), new Date()) && "old-month-day"
+                    isBefore(endOfDay(day), new Date()) && "old-month-day"
                 )
         }>
             <div className="day-header">
