@@ -123,9 +123,15 @@ function CalenderDay({ day, showWeekName, selectedMonth, events } : CalenderDayP
 }
 
 function CalenderEvent({ event} : { event: Event }){
+    const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false)
+    const { updateEvent, deleteEvent } = useEvents()
+
     return (
         <>
-            <button className={cc("event", event.color, event.allDay && "all-day-event")}>
+            <button 
+                className={cc("event", event.color, event.allDay && "all-day-event")}
+                onClick={() => setIsEditEventModalOpen(true)}
+            >
                 {
                     event.allDay ? (
                         <div className="event-name">{event.name}</div>
@@ -147,6 +153,13 @@ function CalenderEvent({ event} : { event: Event }){
                     )
                 }
             </button>
+            <EventFormModal 
+                event={event}
+                isOpen={isEditEventModalOpen}
+                onClose={() => setIsEditEventModalOpen(false)}
+                onSubmit={e => updateEvent(event.id, e)} 
+                onDelete={() => deleteEvent(event.id)}
+            />
         </>
     )
 }
@@ -227,6 +240,7 @@ function EventFormModal({ onSubmit, onDelete, event, date, ...modalProps } : Eve
                 type="text" 
                 id={`${formId}-name`} 
                 ref={nameRef}
+                defaultValue={event?.name}
                 required
                 />
             </div>
@@ -260,6 +274,7 @@ function EventFormModal({ onSubmit, onDelete, event, date, ...modalProps } : Eve
                     disabled={isAllDayChecked}
                     min={startTime}
                     ref={endTimeRef}
+                    defaultValue={event?.endTime}
                 />
               </div>
             </div>
